@@ -10,12 +10,14 @@ import '../styles/global.css';
   <head>
     <BaseHead />
   </head>
-  <body class='min-h-screen m-0 overflow-y-auto relative bg-[#171717] z-1'>
-    <Header />
-    <main>
-      <slot />
-    </main>
-    <Footer />
+  <body class='m-0 overflow-y-auto relative bg-[#171717]'>
+    <div class='min-h-screen flex flex-col'>
+      <Header />
+      <main class='flex-grow'>
+        <slot />
+      </main>
+      <Footer />
+    </div>
     <StarryBackground />
   </body>
 </html>
