@@ -2,7 +2,7 @@
 title: 'My First Blog - YS'
 description: 'This is my first blog ever'
 pubDate: 'Feb 18 2025'
-heroImage: '/banner.jpg'
+heroImage: '/banner.png'
 ---
 
 Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro.
@@ -39,7 +39,7 @@ Itatur? Quiatae cullecum rem ent aut odis in re eossequodi nonsequ idebis ne sap
 
 ### Output
 
-![blog placeholder](/banner.jpg)
+![blog placeholder](/banner.png)
 
 ## Blockquotes
 

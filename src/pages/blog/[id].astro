@@ -1,0 +1,26 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { render, type CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
+import Layout from '../../layout/Layout.astro';
+import Prose from '../../components/Prose.astro';
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({
+    params: { id: post.id },
+    props: { post },
+  }));
+}
+type Props = { post: CollectionEntry<'blog'> };
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<Layout>
+  <div class='flex items-center justify-center'>
+    <Prose>
+      <Content />
+    </Prose>
+  </div>
+</Layout>
