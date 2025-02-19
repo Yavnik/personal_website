@@ -1,0 +1,8 @@
+---
+import { Tweet as CustomTweet } from '@astro-community/astro-embed-twitter';
+---
+
+<div class='flex justify-center items-center'>
+  <CustomTweet theme='dark' id={Astro.props.id} />
+</div>
+<script is:inline src='https://platform.twitter.com/widgets.js'></script>
