@@ -2,7 +2,7 @@
 title: 'My First Blog - YS'
 description: 'This is my first blog ever'
 pubDate: 'Feb 18 2025'
-heroImage: '/banner.png'
+heroImage: '/code_3.jpg'
 ---
 
 Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro.
