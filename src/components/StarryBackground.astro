@@ -14,12 +14,10 @@
     pointer-events: none;
   }
 </style>
-
 <canvas id='starryCanvas'></canvas>
-
 <script is:inline>
   const canvas = document.getElementById('starryCanvas');
-  const ctx = canvas.getContext('2d', { alpha: false }); // Optimize for non-transparent background
+  const ctx = canvas.getContext('2d');
   const stars = [];
   const numStars = 500;
   const starColor = 'rgba(255, 255, 255, 0.8)';
