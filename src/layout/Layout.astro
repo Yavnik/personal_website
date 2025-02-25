@@ -9,6 +9,20 @@ import '../styles/global.css';
 <html lang='en'>
   <head>
     <BaseHead />
+    <script is:inline>
+      // Ensure dark mode is applied immediately to prevent flashing
+      const savedTheme =
+        localStorage.getItem('theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light');
+
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    </script>
   </head>
   <body class='m-0 overflow-y-auto relative dark:bg-[#171717]'>
     <div class='min-h-screen flex flex-col'>
@@ -18,8 +32,6 @@ import '../styles/global.css';
       </main>
       <Footer />
     </div>
-    <div class='hidden dark:block'>
-      <StarryBackground />
-    </div>
+    <StarryBackground />
   </body>
 </html>
