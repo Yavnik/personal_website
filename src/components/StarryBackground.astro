@@ -19,24 +19,48 @@
   const canvas = document.getElementById('starryCanvas');
   const ctx = canvas.getContext('2d');
   const stars = [];
-  const numStars = 500;
+  const MAX_STARS = 500;
   const starColor = 'rgba(255, 255, 255, 0.8)';
   const twinkleSpeed = 0.01;
   let animationFrameId;
+  let resizeTimeout;
+  let isActive = document.documentElement.classList.contains('dark');
+
+  const calculateStarCount = (width, height) => {
+    const area = width * height;
+    const baseCount = Math.floor(area / 3000); // Adjust this divisor to tune star density
+    return Math.min(baseCount, MAX_STARS);
+  };
 
   const updateCanvasSize = () => {
     const dpr = window.devicePixelRatio || 1;
     const rect = canvas.getBoundingClientRect();
 
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-
-    ctx.scale(dpr, dpr); // Scale for retina displays
+    // Only update if dimensions actually changed
+    if (
+      canvas.width !== rect.width * dpr ||
+      canvas.height !== rect.height * dpr
+    ) {
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+      return true;
+    }
+    return false;
   };
 
   const resizeHandler = () => {
-    updateCanvasSize();
-    initStars();
+    // Clear the previous timeout
+    if (resizeTimeout) {
+      clearTimeout(resizeTimeout);
+    }
+
+    // Throttle resize events
+    resizeTimeout = setTimeout(() => {
+      if (updateCanvasSize()) {
+        initStars();
+      }
+    }, 250);
   };
 
   function createStar() {
@@ -53,6 +77,7 @@
     stars.length = 0;
     const width = canvas.width / (window.devicePixelRatio || 1);
     const height = canvas.height / (window.devicePixelRatio || 1);
+    const numStars = calculateStarCount(width, height);
 
     for (let i = 0; i < numStars; i++) {
       const star = createStar();
@@ -63,6 +88,13 @@
   }
 
   function drawStars() {
+    if (!canvas.isConnected) {
+      // Clean up if canvas is removed from DOM
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('resize', resizeHandler);
+      return;
+    }
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = starColor;
 
@@ -88,14 +120,53 @@
   }
 
   function animateStars() {
+    if (!isActive) {
+      cancelAnimationFrame(animationFrameId);
+      return;
+    }
+
     updateStars();
     drawStars();
-    animationFrameId = requestAnimationFrame(animateStars);
+    if (canvas.isConnected) {
+      animationFrameId = requestAnimationFrame(animateStars);
+    }
   }
 
+  function startAnimation() {
+    if (isActive && canvas.isConnected) {
+      updateCanvasSize();
+      initStars();
+      cancelAnimationFrame(animationFrameId); // Cancel any existing animation
+      animateStars();
+    }
+  }
+
+  function stopAnimation() {
+    cancelAnimationFrame(animationFrameId);
+  }
+
+  // Listen for theme changes
+  document.addEventListener('themeChanged', (event) => {
+    isActive = event.detail.isDark;
+    if (isActive) {
+      startAnimation();
+    } else {
+      stopAnimation();
+    }
+  });
+
   // Initialize
-  updateCanvasSize();
   window.addEventListener('resize', resizeHandler);
-  initStars();
-  animateStars();
+
+  // Wait for document to be fully loaded
+  if (document.readyState === 'complete') {
+    startAnimation();
+  } else {
+    window.addEventListener('load', startAnimation);
+  }
+
+  // Ensure the starry background runs when in dark mode on initial load
+  if (isActive) {
+    startAnimation();
+  }
 </script>

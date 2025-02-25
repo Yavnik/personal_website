@@ -41,7 +41,7 @@ const { Content } = await render(post);
   >
     <h1
       id='header'
-      class='text-5xl text-center font-title font-black dark:text-white'
+      class='text-4xl sm:text-5xl text-center font-title font-black dark:text-white'
     >
       {post.data.title}
     </h1>
@@ -59,7 +59,7 @@ const { Content } = await render(post);
   />
 </div>
 <div
-  class='relative flex flex-col gap-3 max-w-screen-md mx-auto px-4 sm:px-6 text-xl leading-relaxed dark:text-white dark:bg-[#171717]/90 rounded-lg'
+  class='relative flex flex-col gap-3 max-w-screen-md mx-auto px-4 sm:px-6 text-base sm:text-xl leading-relaxed dark:text-white dark:bg-[#171717]/90 rounded-lg'
 >
   <Content
     components={{

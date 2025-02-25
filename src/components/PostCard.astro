@@ -20,7 +20,9 @@ const { post } = Astro.props;
     <div class='flex'>
       <DateTag date={post.data.pubDate} />
     </div>
-    <h1 class='text-3xl font-title font-black text-black dark:text-white'>
+    <h1
+      class='text-2xl sm:text-3xl font-title font-black text-black dark:text-white'
+    >
       {post.data.title}
     </h1>
     <p class='text-sm text-zinc-700 dark:text-gray-300'>
