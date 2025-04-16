@@ -13,10 +13,11 @@ import '../styles/global.css';
     <script is:inline>
       (function () {
         if (typeof localStorage !== 'undefined') {
+          const userTheme = localStorage.getItem('userTheme');
           let theme = localStorage.getItem('theme');
 
-          // If no theme is set, check system preference and save it
-          if (!theme) {
+          // If no theme is set or no explicit user preference, check system preference
+          if (!theme || !userTheme) {
             theme = window.matchMedia('(prefers-color-scheme: dark)').matches
               ? 'dark'
               : 'light';
@@ -32,7 +33,8 @@ import '../styles/global.css';
           window
             .matchMedia('(prefers-color-scheme: dark)')
             .addEventListener('change', (e) => {
-              if (!localStorage.getItem('theme')) {
+              // Only update if user hasn't explicitly set a preference
+              if (!localStorage.getItem('userTheme')) {
                 const newTheme = e.matches ? 'dark' : 'light';
                 localStorage.setItem('theme', newTheme);
                 if (newTheme === 'dark') {

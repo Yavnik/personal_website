@@ -108,7 +108,9 @@ import '../styles/global.css';
   themeToggle.addEventListener('click', () => {
     const isDark = !document.documentElement.classList.contains('dark');
     setTheme(isDark);
+    // Store both the theme and user's explicit preference
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    localStorage.setItem('userTheme', 'true');
   });
 
   // Also dispatch an initial theme event once DOM is fully loaded
