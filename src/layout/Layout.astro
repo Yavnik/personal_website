@@ -25,6 +25,27 @@ import '../styles/global.css';
     </script>
   </head>
   <body class='m-0 overflow-y-auto relative dark:bg-[#171717]'>
+    <script>
+      import * as Swetrix from 'swetrix';
+      import { SWETRIX_PID, SWETRIX_URL } from '../config/config';
+
+      Swetrix.init(SWETRIX_PID, {
+        devMode: true,
+        apiURL: SWETRIX_URL,
+      });
+      Swetrix.trackViews({
+        callback: (payload) => {
+          return {
+            ...payload,
+            meta: {
+              theme: document.documentElement.classList.contains('dark')
+                ? 'dark'
+                : 'light',
+            },
+          };
+        },
+      });
+    </script>
     <div class='min-h-screen flex flex-col'>
       <Header />
       <main class='flex-grow mt-4'>
