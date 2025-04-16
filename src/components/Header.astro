@@ -62,6 +62,13 @@ import '../styles/global.css';
   const theme = localStorage.getItem('theme');
   import * as Swetrix from 'swetrix';
 
+  // Define the custom event type
+  interface ThemeChangedEvent extends CustomEvent {
+    detail: {
+      isDark: boolean;
+    };
+  }
+
   // Dispatch theme changed event
   function dispatchThemeEvent(isDark: boolean) {
     const event = new CustomEvent('themeChanged', {
@@ -76,7 +83,6 @@ import '../styles/global.css';
       themeToggle.innerText = DARK_ICON;
       if (!document.documentElement.classList.contains('dark')) {
         document.documentElement.classList.add('dark');
-
         dispatchThemeEvent(true);
         Swetrix.track({
           ev: 'dark_mode_enabled',
@@ -89,7 +95,6 @@ import '../styles/global.css';
       themeToggle.innerText = LIGHT_ICON;
       if (document.documentElement.classList.contains('dark')) {
         document.documentElement.classList.remove('dark');
-
         dispatchThemeEvent(false);
         Swetrix.track({
           ev: 'light_mode_enabled',
@@ -104,7 +109,14 @@ import '../styles/global.css';
   // Set initial theme
   setTheme(theme === 'dark');
 
-  // Handle theme toggle
+  // Listen for theme change events from system changes
+  document.addEventListener('themeChanged', ((event: ThemeChangedEvent) => {
+    if (!localStorage.getItem('userTheme')) {
+      themeToggle.innerText = event.detail.isDark ? DARK_ICON : LIGHT_ICON;
+    }
+  }) as EventListener);
+
+  // Handle theme toggle click
   themeToggle.addEventListener('click', () => {
     const isDark = !document.documentElement.classList.contains('dark');
     setTheme(isDark);

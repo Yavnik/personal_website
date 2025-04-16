@@ -42,6 +42,12 @@ import '../styles/global.css';
                 } else {
                   document.documentElement.classList.remove('dark');
                 }
+
+                // Dispatch theme changed event for components
+                const event = new CustomEvent('themeChanged', {
+                  detail: { isDark: e.matches },
+                });
+                document.dispatchEvent(event);
               }
             });
         }
