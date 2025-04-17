@@ -11,7 +11,12 @@ import '../styles/global.css';
     <a href='/' class='text-2xl sm:text-3xl font-bold'> Yavnik's Blog </a>
     <div class='flex gap-4 items-center'>
       <button id='theme-toggle' class='text-2xl sm:text-3xl'></button>
-      <a href='https://github.com/Yavnik' target='_blank' aria-label='GitHub'>
+      <a
+        id='github-button'
+        href='https://github.com/Yavnik'
+        target='_blank'
+        aria-label='GitHub'
+      >
         <svg
           xmlns='http://www.w3.org/2000/svg'
           x='0px'
@@ -27,6 +32,7 @@ import '../styles/global.css';
         </svg>
       </a>
       <a
+        id='twitter-button'
         href='https://x.com/paired_electron'
         target='_blank'
         aria-label='Paired Electron'
@@ -48,15 +54,23 @@ import '../styles/global.css';
     </div>
   </div>
 </header>
-<script is:inline>
+<script>
   const LIGHT_ICON = '🌞';
   const DARK_ICON = '🌙';
 
-  const themeToggle = document.getElementById('theme-toggle');
+  const themeToggle = document.getElementById('theme-toggle') as HTMLElement;
   const theme = localStorage.getItem('theme');
+  import * as Swetrix from 'swetrix';
+
+  // Define the custom event type
+  interface ThemeChangedEvent extends CustomEvent {
+    detail: {
+      isDark: boolean;
+    };
+  }
 
   // Dispatch theme changed event
-  function dispatchThemeEvent(isDark) {
+  function dispatchThemeEvent(isDark: boolean) {
     const event = new CustomEvent('themeChanged', {
       detail: { isDark },
     });
@@ -64,34 +78,84 @@ import '../styles/global.css';
   }
 
   // Initialize theme
-  function setTheme(isDark) {
+  function setTheme(isDark: boolean) {
     if (isDark) {
       themeToggle.innerText = DARK_ICON;
       if (!document.documentElement.classList.contains('dark')) {
         document.documentElement.classList.add('dark');
+        dispatchThemeEvent(true);
+        Swetrix.track({
+          ev: 'dark_mode_enabled',
+          meta: {
+            page: window.location.pathname,
+          },
+        });
       }
-      dispatchThemeEvent(true);
     } else {
       themeToggle.innerText = LIGHT_ICON;
       if (document.documentElement.classList.contains('dark')) {
         document.documentElement.classList.remove('dark');
+        dispatchThemeEvent(false);
+        Swetrix.track({
+          ev: 'light_mode_enabled',
+          meta: {
+            page: window.location.pathname,
+          },
+        });
       }
-      dispatchThemeEvent(false);
     }
   }
 
   // Set initial theme
   setTheme(theme === 'dark');
 
-  // Handle theme toggle
+  // Listen for theme change events from system changes
+  document.addEventListener('themeChanged', ((event: ThemeChangedEvent) => {
+    if (!localStorage.getItem('userTheme')) {
+      themeToggle.innerText = event.detail.isDark ? DARK_ICON : LIGHT_ICON;
+    }
+  }) as EventListener);
+
+  // Handle theme toggle click
   themeToggle.addEventListener('click', () => {
     const isDark = !document.documentElement.classList.contains('dark');
     setTheme(isDark);
+    // Store both the theme and user's explicit preference
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    localStorage.setItem('userTheme', 'true');
   });
 
   // Also dispatch an initial theme event once DOM is fully loaded
   document.addEventListener('DOMContentLoaded', () => {
     dispatchThemeEvent(document.documentElement.classList.contains('dark'));
+  });
+
+  const githubButton = document.getElementById(
+    'github-button'
+  ) as HTMLAnchorElement;
+  const twitterButton = document.getElementById(
+    'twitter-button'
+  ) as HTMLAnchorElement;
+
+  // Track GitHub and Twitter button clicks
+
+  githubButton.addEventListener('click', () => {
+    Swetrix.track({
+      ev: 'github_button_click',
+      unique: true,
+      meta: {
+        page: window.location.pathname,
+      },
+    });
+  });
+
+  twitterButton.addEventListener('click', () => {
+    Swetrix.track({
+      ev: 'twitter_button_click',
+      unique: true,
+      meta: {
+        page: window.location.pathname,
+      },
+    });
   });
 </script>

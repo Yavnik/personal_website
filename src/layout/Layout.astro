@@ -6,25 +6,76 @@ import StarryBackground from '../components/StarryBackground.astro';
 import '../styles/global.css';
 ---
 
+<!doctype html>
 <html lang='en'>
   <head>
     <BaseHead />
     <script is:inline>
-      // Ensure dark mode is applied immediately to prevent flashing
-      const savedTheme =
-        localStorage.getItem('theme') ||
-        (window.matchMedia('(prefers-color-scheme: dark)').matches
-          ? 'dark'
-          : 'light');
+      (function () {
+        if (typeof localStorage !== 'undefined') {
+          const userTheme = localStorage.getItem('userTheme');
+          let theme = localStorage.getItem('theme');
 
-      if (savedTheme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+          // If no theme is set or no explicit user preference, check system preference
+          if (!theme || !userTheme) {
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light';
+            localStorage.setItem('theme', theme);
+          }
+
+          // Apply theme immediately to prevent flash
+          if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+          }
+
+          // Handle system theme changes
+          window
+            .matchMedia('(prefers-color-scheme: dark)')
+            .addEventListener('change', (e) => {
+              // Only update if user hasn't explicitly set a preference
+              if (!localStorage.getItem('userTheme')) {
+                const newTheme = e.matches ? 'dark' : 'light';
+                localStorage.setItem('theme', newTheme);
+                if (newTheme === 'dark') {
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                }
+
+                // Dispatch theme changed event for components
+                const event = new CustomEvent('themeChanged', {
+                  detail: { isDark: e.matches },
+                });
+                document.dispatchEvent(event);
+              }
+            });
+        }
+      })();
     </script>
   </head>
   <body class='m-0 overflow-y-auto relative dark:bg-[#171717]'>
+    <script>
+      import * as Swetrix from 'swetrix';
+      import { SWETRIX_PID, SWETRIX_URL } from '../config/config';
+
+      Swetrix.init(SWETRIX_PID, {
+        devMode: true,
+        apiURL: SWETRIX_URL,
+      });
+      Swetrix.trackViews({
+        callback: (payload) => {
+          return {
+            ...payload,
+            meta: {
+              theme: document.documentElement.classList.contains('dark')
+                ? 'dark'
+                : 'light',
+            },
+          };
+        },
+      });
+    </script>
     <div class='min-h-screen flex flex-col'>
       <Header />
       <main class='flex-grow mt-4'>
