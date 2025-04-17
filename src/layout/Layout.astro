@@ -3,14 +3,61 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import StarryBackground from '../components/StarryBackground.astro';
-import { UMAMI_URL, UMAMI_ID } from '../config/config';
+import { UMAMI_URL, UMAMI_ID, SITE_URL, SITE_TITLE, SITE_AUTHOR } from '../config/config';
 import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: string;
+  tags?: string[];
+  datePublished?: Date;
+  isArticle?: boolean;
+}
+
+const {
+  title,
+  description,
+  image,
+  type = 'website',
+  tags,
+  datePublished,
+  isArticle = false,
+} = Astro.props;
+
+// Generate JSON-LD structured data
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": isArticle ? "BlogPosting" : "WebSite",
+  "url": new URL(Astro.url.pathname, SITE_URL).toString(),
+  "name": title || SITE_TITLE,
+  ...(isArticle && {
+    "headline": title,
+    "description": description,
+    "image": new URL(image || '', SITE_URL).toString(),
+    "datePublished": datePublished ? new Date(datePublished).toISOString() : undefined,
+    "dateModified": datePublished ? new Date(datePublished).toISOString() : undefined,
+    "keywords": tags?.join(', '),
+    "author": {
+      "@type": "Person",
+      "name": SITE_AUTHOR
+    }
+  })
+};
 ---
 
 <!doctype html>
 <html lang='en'>
   <head>
-    <BaseHead />
+    <BaseHead 
+      title={title}
+      description={description}
+      image={image}
+      type={type}
+      tags={tags}
+      datePublished={datePublished}
+    />
     <script is:inline>
       (function () {
         if (typeof localStorage !== 'undefined') {
@@ -56,6 +103,7 @@ import '../styles/global.css';
     </script>
 
     <script is:inline defer src={UMAMI_URL} data-website-id={UMAMI_ID}></script>
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
   <body class='m-0 overflow-y-auto relative dark:bg-[#171717]'>
     <div class='min-h-screen flex flex-col'>
