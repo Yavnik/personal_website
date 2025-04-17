@@ -60,7 +60,7 @@ import '../styles/global.css';
 
   const themeToggle = document.getElementById('theme-toggle') as HTMLElement;
   const theme = localStorage.getItem('theme');
-  import * as Swetrix from 'swetrix';
+  const umami = (window as any).umami;
 
   // Define the custom event type
   interface ThemeChangedEvent extends CustomEvent {
@@ -84,24 +84,20 @@ import '../styles/global.css';
       if (!document.documentElement.classList.contains('dark')) {
         document.documentElement.classList.add('dark');
         dispatchThemeEvent(true);
-        Swetrix.track({
-          ev: 'dark_mode_enabled',
-          meta: {
-            page: window.location.pathname,
-          },
-        });
+        // Track dark mode enabled
+        if (umami) {
+          umami.track('dark-mode-enabled', { page: window.location.pathname });
+        }
       }
     } else {
       themeToggle.innerText = LIGHT_ICON;
       if (document.documentElement.classList.contains('dark')) {
         document.documentElement.classList.remove('dark');
         dispatchThemeEvent(false);
-        Swetrix.track({
-          ev: 'light_mode_enabled',
-          meta: {
-            page: window.location.pathname,
-          },
-        });
+        // Track light mode enabled
+        if (umami) {
+          umami.track('light-mode-enabled', { page: window.location.pathname });
+        }
       }
     }
   }
@@ -140,22 +136,55 @@ import '../styles/global.css';
   // Track GitHub and Twitter button clicks
 
   githubButton.addEventListener('click', () => {
-    Swetrix.track({
-      ev: 'github_button_click',
-      unique: true,
-      meta: {
-        page: window.location.pathname,
-      },
-    });
+    if (umami) {
+      umami.track('github-button-click', { page: window.location.pathname });
+    }
   });
 
   twitterButton.addEventListener('click', () => {
-    Swetrix.track({
-      ev: 'twitter_button_click',
-      unique: true,
-      meta: {
-        page: window.location.pathname,
-      },
-    });
+    if (umami) {
+      umami.track('twitter-button-click', { page: window.location.pathname });
+    }
   });
+
+  (() => {
+    const name = 'outbound-link-click';
+    
+    // Helper function to check if a URL is external
+    const isExternalURL = (href: string): boolean => {
+      try {
+        // Skip non-HTTP/HTTPS URLs, anchors, and javascript: links
+        if (!href || href.startsWith('#') || href.startsWith('javascript:')) {
+          return false;
+        }
+
+        // For relative URLs, convert to absolute
+        const absoluteUrl = new URL(href, window.location.origin);
+        const currentUrl = new URL(window.location.href);
+
+        // Compare domains and protocols
+        return absoluteUrl.origin !== currentUrl.origin;
+      } catch (e) {
+        // If URL parsing fails, it's likely invalid or relative
+        return false;
+      }
+    };
+
+    // Only select anchor tags within the main content area
+    document.querySelectorAll('a[href]').forEach(a => {
+      const href = a.getAttribute('href');
+      
+      // Skip if already tracked or no href
+      if (!href || a.getAttribute('data-umami-event')) {
+        return;
+      }
+
+      // Only track external URLs
+      if (isExternalURL(href)) {
+        a.setAttribute('data-umami-event', name);
+        a.setAttribute('data-umami-event-url', href);
+        a.setAttribute('data-umami-event-page', window.location.pathname);
+      }
+    });
+  })();
 </script>

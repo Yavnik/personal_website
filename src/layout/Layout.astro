@@ -3,6 +3,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import StarryBackground from '../components/StarryBackground.astro';
+import { UMAMI_URL, UMAMI_ID } from '../config/config';
 import '../styles/global.css';
 ---
 
@@ -53,29 +54,10 @@ import '../styles/global.css';
         }
       })();
     </script>
+
+    <script is:inline defer src={UMAMI_URL} data-website-id={UMAMI_ID}></script>
   </head>
   <body class='m-0 overflow-y-auto relative dark:bg-[#171717]'>
-    <script>
-      import * as Swetrix from 'swetrix';
-      import { SWETRIX_PID, SWETRIX_URL } from '../config/config';
-
-      Swetrix.init(SWETRIX_PID, {
-        devMode: true,
-        apiURL: SWETRIX_URL,
-      });
-      Swetrix.trackViews({
-        callback: (payload) => {
-          return {
-            ...payload,
-            meta: {
-              theme: document.documentElement.classList.contains('dark')
-                ? 'dark'
-                : 'light',
-            },
-          };
-        },
-      });
-    </script>
     <div class='min-h-screen flex flex-col'>
       <Header />
       <main class='flex-grow mt-4'>
