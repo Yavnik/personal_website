@@ -1,8 +1,8 @@
 # Build stage: Compile the Astro project
 FROM node:lts AS build
-ARG UMAMI_ID
-ARG UMAMI_URL
-ARG SITE_URL
+ENV UMAMI_ID=$UMAMI_ID
+ENV UMAMI_URL=$UMAMI_URL
+ENV SITE_URL=$SITE_URL
 WORKDIR /app
 COPY . .
 RUN echo "UMAMI_ID=${UMAMI_ID}" > .env \
