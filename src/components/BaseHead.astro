@@ -1,17 +1,20 @@
 ---
-// Import the global.css file here so that it is included on
-// all pages through the use of the <BaseHead /> component.
 import {
   SITE_TITLE,
   SITE_DESC,
   SITE_BANNER,
   SITE_FAVICON,
+  SITE_AUTHOR,
 } from '../config/config';
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
+  author?: string;
+  type?: string;
+  tags?: string[];
+  datePublished?: Date;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -20,6 +23,10 @@ const {
   title = SITE_TITLE,
   description = SITE_DESC,
   image = SITE_BANNER,
+  author = SITE_AUTHOR,
+  type = 'website',
+  tags,
+  datePublished,
 } = Astro.props;
 
 const isProd = import.meta.env.PROD;
@@ -29,15 +36,15 @@ const isProd = import.meta.env.PROD;
 <meta charset='utf-8' />
 <meta name='viewport' content='width=device-width,initial-scale=1' />
 <meta name='language' content='en' />
-<meta name='robots' content={isProd ? 'noindex' : 'index,follow'} />
+<meta name='robots' content={isProd ? 'index,follow' : 'noindex,nofollow'} />
 <link rel='icon' type='image/png' href={SITE_FAVICON} />
-<link rel='sitemap' href='/sitemap-index.xml' />
+<!-- <link rel='sitemap' href='/sitemap-index.xml' />
 <link
   rel='alternate'
   type='application/rss+xml'
   title={SITE_TITLE}
   href={new URL('rss.xml', Astro.site)}
-/>
+/> -->
 <meta name='generator' content={Astro.generator} />
 
 <!-- Font preloads -->
@@ -50,13 +57,17 @@ const isProd = import.meta.env.PROD;
 <title>{title}</title>
 <meta name='title' content={title} />
 <meta name='description' content={description} />
+<meta name='author' content={author} />
+{tags && <meta name='keywords' content={tags.join(', ')} />}
 
 <!-- Open Graph / Facebook -->
-<meta property='og:type' content='website' />
+<meta property='og:type' content={type} />
 <meta property='og:url' content={Astro.url} />
 <meta property='og:title' content={title} />
 <meta property='og:description' content={description} />
 <meta property='og:image' content={new URL(image, Astro.url)} />
+<meta property='og:site_name' content={SITE_TITLE} />
+{datePublished && <meta property='article:published_time' content={new Date(datePublished).toISOString()} />}
 
 <!-- Twitter -->
 <meta property='twitter:card' content='summary_large_image' />
@@ -64,3 +75,4 @@ const isProd = import.meta.env.PROD;
 <meta property='twitter:title' content={title} />
 <meta property='twitter:description' content={description} />
 <meta property='twitter:image' content={new URL(image, Astro.url)} />
+<meta name='twitter:creator' content={author} />

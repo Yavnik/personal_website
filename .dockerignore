@@ -1,0 +1,32 @@
+# Git files
+.git
+.gitignore
+
+# Node modules (we install them inside the container)
+node_modules
+
+# Build output (we generate it inside the container)
+dist
+.astro
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Docker files
+Dockerfile
+.dockerignore
+
+# Coolify files (if any)
+.coolify.yml
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
