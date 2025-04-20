@@ -2,8 +2,5 @@
 User-agent: *
 Allow: /
 
-# Sitemap location
-Sitemap: https://yavniksharma.tech/sitemap-index.xml
-
 # Disallow development environment
-Host: https://yavniksharma.tech 
+Host: https://yavnik.tech
