@@ -1,7 +1,13 @@
 # Build stage: Compile the Astro project
 FROM node:lts AS build
+ARG UMAMI_ID
+ARG UMAMI_URL
+ARG SITE_URL
 WORKDIR /app
 COPY . .
+RUN echo "UMAMI_ID=${UMAMI_ID}" > .env.production \
+    && echo "UMAMI_URL=${UMAMI_URL}" >> .env.production \
+    && echo "SITE_URL=${SITE_URL}" >> .env.production
 RUN npm install
 RUN npm run build
 
