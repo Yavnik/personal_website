@@ -94,14 +94,14 @@ This will show you the path to each worktree, its current commit HEAD, and the b
 
 ### Remove a worktree:
 
-Once your `todo-app-landing-refactor` worktree has served it's purpose, you should remove it to keep your workspace clean and save space.
+Once your `todo-app-refactor` worktree has served it's purpose, you should remove it to keep your workspace clean and save space.
 
 ```bash
 # First, you might want to delete the branch if you've merged changes (optional but good practice)
 git branch -d refactor/landing-page
 
 # Then, remove the worktree
-git worktree remove todo-app-landing-refactor
+git worktree remove todo-app-refactor
 ```
 
 ⚠️ If there are uncommitted changes, Git won't delete it.
