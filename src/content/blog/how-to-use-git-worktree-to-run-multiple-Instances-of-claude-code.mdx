@@ -1,0 +1,126 @@
+---
+title: "Use Git Worktree to Run Multiple Instances of Claude Code"
+description: "Unleash Your AI Vibe Coding Army: A Practical Guide to Using git worktree for Parallel Tasks by running multiple instances of AI assistants"
+pubDate: "August 9, 2025"
+heroImage: "/how-to-use-git-worktree-to-run-multiple-Instances-of-claude-code.png"
+tags:
+  ["git", "claude", "ai", "coding", "development", "worktree", "vibe coding"]
+---
+
+Want to run multiple instances of Claude Code, Gemini, or the latest Cursor CLI without your changes clashing? If you try to run these tasks in the same branch, you'll end up with conflicting changes and a messy commit history.
+
+<br />
+Think of how a human development team works: each developer tackles a task on their
+own machine, in their own "branch." We can mimic this powerful workflow by giving
+each AI assistant its own isolated branch to work in. The perfect tool for this is
+`git worktree`.
+
+## What is git worktree?
+
+Simply put, `git worktree` lets you have multiple working directories linked to a single Git repo.
+
+Normally your project folder (your “working tree”) can only have one branch checked out at a time. A `worktree` creates a new, separate folder on your computer that acts as a second (or third, or fourth…) working tree. Each worktree can have a different branch checked out, but they all share the same underlying `.git` history and database.
+
+By adding a worktree, you can:
+
+- Create an entirely new folder linked to your project.
+- Check out a new or existing branch in that isolated folder.
+- Run an instance of Claude Code (or any tool) in each folder, letting them work in parallel without interference.
+
+## How to use it: A practical walkthrough
+
+Let's say you're in your project folder `yet-another-todo-app`. You've asked your AI assistant to start refactoring the user authentication flow, but you don't want to wait for it to finish before starting on the landing page.
+
+### Step 1: Create a new worktree
+
+Run this command from your main project folder `yet-another-todo-app`
+
+```bash
+git worktree add ../todo-app-refactor -b refactor/landing-page main
+```
+
+Let's break this down:
+
+- `git worktree add` this is the base command to add a worktree
+- `../todo-app-refactor` This creates a new folder named todo-app-refactor alongside your current directory. This is your new, isolated workspace.
+- `-b refactor/landing-page`: This tells Git to create a new branch named `refactor/landing-page` inside the worktree
+- `main`: This specifies that the new branch should be created from the `main` branch.
+
+**Folder structure:**
+
+```bash
+# Before
+yet-another-todo-app/
+
+# After
+yet-another-todo-app/  (main branch)
+todo-app-refactor/     (refactor/landing-page branch)
+todo-app-bug-fixes/    (bug/auth-logout branch)
+```
+
+### Step 2: Work in isolation
+
+Now, navigate to your new workspace and let your AI assistant to work there
+
+```bash
+cd ../todo-app-refactor
+```
+
+Here you can run Claude Code, or your preferred AI assistant. The changes done here are completely isolated to the `refactor/landing-page` branch.
+
+Once done, commit and push like normal and merge via PR.
+
+> **Note** - Files like `.env`, `node_modules` or local config files (anything in `.gitignore`) will not be copied to your new worktrees. You will have to manually copy them
+
+```bash
+cp yet-another-todo-app/.env todo-app-refactor/
+```
+
+This way, you can work on multiple things at once like debugging a production issue while developing a new feature or testing different AI approaches to the same problem.
+
+## Managing and Cleaning Up Your Worktrees
+
+Your workspace can get cluttered if you don't manage your worktrees.
+
+### List all Worktrees:
+
+To see all active worktrees for your project, run:
+
+```bash
+git worktree list
+```
+
+This will show you the path to each worktree, its current commit HEAD, and the branch that's checked out.
+
+### Remove a worktree:
+
+Once your `todo-app-landing-refactor` worktree has served it's purpose, you should remove it to keep your workspace clean and save space.
+
+```bash
+# First, you might want to delete the branch if you've merged changes (optional but good practice)
+git branch -d refactor/landing-page
+
+# Then, remove the worktree
+git worktree remove todo-app-landing-refactor
+```
+
+⚠️ If there are uncommitted changes, Git won't delete it.
+Either you can:
+
+- Commit your changes
+- Force remove (dangerous! See caution below)
+
+```bash
+git worktree remove --force /path/to/worktree
+```
+
+⚠️ **Use this with extreme care.** This will forcefully delete the worktree causing loss of any uncommitted changes. Only use it if you are absolutely certain you don't need the changes.
+
+> "Troubleshooting: If a worktree gets corrupted or you accidentally delete the folder: `git worktree prune` - removes references to deleted worktrees `git worktree repair` - fixes broken worktree references"
+
+## Conclusion
+
+`git worktree` is an excellent solution for working with multiple AI assistants.
+With worktrees, you can have `claude` running in one terminal and `gemini cli` in another, sky is the limit! (or plan's actual usage limits, whichever comes first 😀)
+
+It'll be like an army of developers working with you.
