@@ -118,6 +118,12 @@ git worktree remove --force /path/to/worktree
 
 > "Troubleshooting: If a worktree gets corrupted or you accidentally delete the folder: `git worktree prune` - removes references to deleted worktrees `git worktree repair` - fixes broken worktree references"
 
+## Branchlet - A CLI tool to create a manage worktrees
+
+[Branchlet](https://github.com/raghavpillai/branchlet) is an interactive CLI tool with an easy to user interface which you can use to create and manage workrees.
+It's most notable features include ability to auto copy user specified files like env files to your new worktrees. This way you do not need to manually copy them. New worktrees would be instantly runnable.
+Apart from copying files, you can also specify post creation commands such as `npm install`. Using such a tool makes managing multiple worktrees extremely easy.
+
 ## Conclusion
 
 `git worktree` is an excellent solution for working with multiple AI assistants.
